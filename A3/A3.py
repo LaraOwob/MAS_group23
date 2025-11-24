@@ -20,6 +20,8 @@ def Thompson_update(alpha, beta, reward):
     alpha =alpha + reward
     beta = beta +(1-reward)
     return alpha, beta
+
+
 def beta_density_plot(iterations, p_list):
 
     alpha_beta_pairs = []

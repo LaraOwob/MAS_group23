@@ -22,28 +22,33 @@ def optimal_policy(rewards,actions,states,neighbors,iterations,tol):
     R = np.zeros((n_actions,n_states))  # immediate reward for taking action a in state s
 
     for a in actions:
-        for s in range(n_states):               
+        for s in range(n_states):    
+                       
             next_s = neighbors[s][a]
             P[a,s, next_s] = 1.0  # deterministic transition
             if next_s in rewards:
                 R[a,s] = rewards[next_s]
+            
 
     
     V = rewards.copy()
     for it in range(iterations):
         Q = np.zeros((n_actions, n_states))
         for a in range(n_actions):
-            Q[a] = R[a] + (P[a] @ V)
+            Q[a] = R[a] + P[a] @ V
         V_new = np.max(Q, axis=0)
         if np.max(np.abs(V_new - V)) < tol:
             V = V_new
+            print(f"Converged in {it} iterations.")
             break
         V = V_new
     # extract greedy policy
     Q = np.zeros((n_actions, n_states))
     for a in range(n_actions):
-        Q[a] = R[a] + (P[a] @ V)
+        Q[a] = R[a] + P[a] @ V
     policy = np.argmax(Q, axis=0)  # deterministic action per state
+    
+ 
     return V, policy
 
 
@@ -52,11 +57,11 @@ def createReward_list(no_states,A_reward,B_reward,r_nt):
     for s in range(no_states):
     
         if s ==1 or s ==(no_states-2):
-            rewards[s] =(A_reward + r_nt)/2
+            rewards[s] +=(A_reward + r_nt)/2
         if s ==4 or s == 3:
-            rewards[s] =(B_reward + r_nt)/2
+            rewards[s] +=(B_reward + r_nt)/2
         if s == 5 or s==2:
-            rewards[s] = r_nt
+            rewards[s] += r_nt
     return rewards
 
 def main():
@@ -91,32 +96,36 @@ def main():
     rewards = np.array([0,10,0,0,0,0,10,0])
     rewards = createReward_list(no_states,A_reward,B_reward,R_nt)
     #Question 1
+    print("Question 1:")
     V_pi = MDP_value_iteration(P, rewards)
     print("Optimal Value Function:")    
     print(V_pi)
     
     #Question 2
-    V_pi, policy = optimal_policy(rewards, actions=[0,1], states=list(range(8)), neighbors=neighbors, iterations=1000, tol=1e-6)
-    print("\n\nOptimal Value Function from Optimal Policy:")
+    print("\n\nQuestion 2:")
+    V_pi, policy = optimal_policy(rewards, actions=[0,1], states=list(range(8)), neighbors=neighbors, iterations=10000, tol=1e-6)
+    print("Optimal Value Function from Optimal Policy:")
     print(V_pi)
     print("Optimal Policy (0-indexed):")
     print(policy)
     
     #Question 3
+    print("\n\nQuestion 3:")
     R_nt = -1
-    rewards = createReward_list(no_states,A_reward,B_reward,R_nt)
+    rewards = createReward_list(no_states,A_reward,B_reward,R_nt)    
     V_pi, policy = optimal_policy(rewards, actions=[0,1], states=list(range(no_states)), neighbors=neighbors, iterations=1000, tol=1e-6)
-    print("\n\nWith negative non-terminal reward -1:") 
+    print("With negative non-terminal reward -1:") 
     print("Optimal Value Function from Optimal Policy:")
     print(V_pi)
     print("Optimal Policy (0-indexed):")
     print(policy)
     
     #Question 4
+    print("\n\nQuestion 4:")
     R_nt = -10
-    rewards = createReward_list(no_states,A_reward,B_reward,R_nt)
+    rewards = createReward_list(no_states,A_reward,B_reward,R_nt)   
     V_pi, policy = optimal_policy(rewards, actions=[0,1], states=list(range(no_states)), neighbors=neighbors, iterations=1000, tol=1e-6)
-    print("\n\nWith more negative non-terminal reward -10:")
+    print("With more negative non-terminal reward -10:")
     print("Optimal Value Function from Optimal Policy:")
     print(V_pi)
     print("Optimal Policy (0-indexed):")
